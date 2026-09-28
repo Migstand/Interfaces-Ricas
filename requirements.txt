@@ -1,0 +1,5 @@
+npm install -g @angular/cli
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+\. "$HOME/.nvm/nvm.sh"
+ng new <nome-projeto>
+nvm install 26
