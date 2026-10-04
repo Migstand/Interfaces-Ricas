@@ -8,6 +8,14 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideOptimus({ theme: { preset: Aura } }),
+    provideOptimus({ theme: { preset: Aura ,
+      options: {
+          cssLayer: {
+              name: 'optimus',
+              order: 'theme, base, optimus'
+          }
+        }
+      } 
+    }),
   ],
 };
