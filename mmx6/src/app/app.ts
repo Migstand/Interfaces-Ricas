@@ -9,7 +9,7 @@ import { Badge } from '@openng/optimus-ui/badge';
 import { AccordionModule } from '@openng/optimus-ui/accordion';
 import { SelectModule } from '@openng/optimus-ui/select';
 import { MessageModule } from '@openng/optimus-ui/message';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgFor } from '@angular/common';
 
 
 interface Dica {
@@ -30,42 +30,120 @@ interface Dificuldade{
 }
 
 @Component({
-  imports: [RouterOutlet, FormsModule, ButtonModule, TableModule, TagModule, AccordionModule, InputText, SelectModule, FormsModule, MessageModule, DatePipe],
+  imports: [RouterOutlet, FormsModule, ButtonModule, TableModule, TagModule, 
+    AccordionModule, InputText, SelectModule, FormsModule, MessageModule, DatePipe],
   selector: 'app-root',
   styleUrl: './app.css',
   // templateUrl: './app.html',
   template: `
-      <header class="flex justify-center gap-2">
-        <h1>{{ title() }}</h1>
+      <header class="flex justify-center gap-2 bg-[#0000ff] p-2 rounded">
+        <h1 class="text-white">{{ title() }}</h1>
       </header>
     
-      <main class="flex flex-col gap-4"> 
+      <main class="flex justify-between gap-4"> 
         <section class="flex flex-col gap-4">
-          <p-button [disabled]="false" (onClick)="CriarDica()" class="pr-6" label="Criar Nova Dica" icon="pi pi-check" iconPos="right"/> 
-          <p-button [disabled]="false" (onClick)="Apagar()" label="Apagar" severity="danger"/>
-          <p-button [disabled]="false" (onClick)="Apagar()" label="Atualizar" severity="warn"/>
-          <p-button [disabled]="false" (onClick)="Apagar()" label="Listar"  severity="info" />
-          <p-button [disabled]="false" (onClick)="Apagar()" label="Detalhar" severity="help" />
+          <p-button [disabled]="false" (onClick)="CriarNovaDica()" class="pr-6" label="Criar Nova Dica" icon="pi pi-check" iconPos="right"/> 
           <!-- @if (criar){ -->
           <!-- <input pInputText placeholder = "Fase" class="p-2" [(ngModel)] = "fase"> -->
           
-          <div class="card flex justify-center">
-            <p-select [options]="fases" [(ngModel)]="fase" [checkmark]="true" optionLabel="nome" [editable]="false" [showClear]="true" placeholder="Fase" class="w-full md:w-56" />
-          </div>
+          @if (mostrarFormulario() != false){
+            <p>Fases</p>
+            <div class="card flex justify-center">
+              <p-select [options]="fases" [(ngModel)]="fase" [checkmark]="true" optionLabel="nome" [editable]="false" [showClear]="true" placeholder="Fase" class="w-full md:w-56" />
+            </div>
+
+            <p>Descrição</p>
+            <input pInputText placeholder = "Descrição" class="p-1" [(ngModel)] = "descricao">
+            
+            <!-- <input pInputText placeholder = "Dificuldade" class="p-1" [(ngModel)] = "dificuldade"> -->
+            <p>É difícil?</p>
+            <div class="card flex justify-center">
+              <p-select [options]="dificuldades" [(ngModel)]="dificuldade" [checkmark]="true"  [editable]="false" [showClear]="true" placeholder="Dificuldade" class="w-full md:w-56" />
+            </div>
+            @if (dica_atualizar() === null) {
+
+  <p-button
+    [disabled]="false"
+    (onClick)="CriarDica()"
+    class="pr-6"
+    label="Criar Dica"
+    icon="pi pi-check"
+    iconPos="right"
+  />
+
+} @else {
+
+  <p-button
+    [disabled]="false"
+    (onClick)="SalvarAtualizacao()"
+    class="pr-6"
+    label="Atualizar Dica"
+    icon="pi pi-save"
+    severity="warn"
+  />
+
+}
+            
+            <!-- <input pInputText placeholder = "Personagem" class="p-1" [(ngModel)] = "personagem"> -->
+            <!-- } -->
           
-          <input pInputText placeholder = "Descrição" class="p-1" [(ngModel)] = "descricao">
+          }
           
-          <!-- <input pInputText placeholder = "Dificuldade" class="p-1" [(ngModel)] = "dificuldade"> -->
-          <p>É difícil?</p>
-          <div class="card flex justify-center">
-            <p-select [options]="dificuldades" [(ngModel)]="dificuldade" [checkmark]="true" optionLabel="dificuldade" [editable]="false" [showClear]="true" placeholder="Dificuldade" class="w-full md:w-56" />
-          </div>
+          <!-- <p-button [disabled]="false" (onClick)="Apagar()" label="Atualizar" severity="warn"/> -->
+          <!-- <p-button [disabled]="false" (onClick)="Apagar()" label="Listar"  severity="info" /> -->
+          <!-- <p-button [disabled]="false" (onClick)="Apagar()" label="Detalhar" severity="help" /> -->
           
-          <!-- <input pInputText placeholder = "Personagem" class="p-1" [(ngModel)] = "personagem"> -->
-          <!-- } -->
         </section>
-        
         <section>
+          @if (detalhe_dica() !== null) {
+
+  <div class="card p-4 border rounded-lg">
+
+      <h2 class="text-xl font-bold">
+        Detalhes da Dica
+      </h2>
+
+      <p>
+        <strong>Número:</strong>
+        {{ detalhe_dica()?.numero }}
+      </p>
+
+      <p>
+        <strong>Fase:</strong>
+        {{ detalhe_dica()?.fase }}
+      </p>
+
+      <p>
+        <strong>Descrição:</strong>
+        {{ detalhe_dica()?.descricao }}
+      </p>
+
+      <p>
+        <strong>Dificuldade:</strong>
+
+        @if (detalhe_dica()?.dificuldade === false) {
+          Fácil
+        } @else {
+          Difícil
+        }
+
+      </p>
+
+      <p>
+        <strong>Data publicada:</strong>
+        {{ detalhe_dica()?.data | date:'dd/MM/yyyy' }}
+      </p>
+
+      <p-button
+        label="Fechar"
+        icon="pi pi-times"
+        severity="secondary"
+        (onClick)="detalhe_dica.set(null)"
+      />
+
+    </div>
+
+  }
           <p-table [value] = dicas() stripedRows="">
             <ng-template #header>
               <tr>
@@ -75,8 +153,8 @@ interface Dificuldade{
                 <th> Dificuldade </th>
                 <th> Data Publicada </th>
               </tr>
-              <ng-template #body let-dica>
-                <tr>
+              <ng-template #body let-dica >
+                <tr >
                     <td>
                         {{ dica.numero }}
                     </td>
@@ -87,15 +165,36 @@ interface Dificuldade{
                         {{ dica.descricao }}
                     </td>
                     <td>
-                      @if (dica.dificuldade == false){
+                      @if (dica.dificuldade === false){
                         <p-message severity="success">Fácil</p-message>
                       } @else{
                         <p-message severity="error">Difícil</p-message>
                       }
                     </td>
                     <td>
+                        
+                        <p-button [disabled]="false" (onClick)="EditarDica(dica)" label="Atualizar" severity="warn"/>
+                    </td>
+                    <td>
+                      <p-button
+                        [disabled]="false"
+                        (onClick)="DetalharDica(dica)"
+                        label="Detalhar"
+                        severity="info"
+                      />
+                    </td>
+                    <td>
+                      <!-- <button (click)="ApagarDica(numero_apagar())">
+                          Apagar
+                      </button> -->
+                        <p-button [disabled]="false" (onClick)="ApagarDica(dica.numero)" label="Apagar" severity="danger"/>
+                    </td>
+                    <td>
+                        <!-- <p-button [disabled]="false" (onClick)="Apagar()" label="Detalhar" severity="help" /> -->
                         {{ dica.data | date:'dd/MM/yyyy' }}
                     </td>
+                    
+                    
                 </tr>
                 </ng-template>
 
@@ -136,17 +235,25 @@ export class App{
   { nome: "Blaze Heatnix" },
   { nome: "Blizzard Wolfang" }]
 
-  dificuldade = false
-  dificuldades:Dificuldade[] = [
-    {dificuldade: false}, 
-    {dificuldade: true}
-  ]
+  dificuldade = signal<boolean>(false);
+
+  dificuldades: boolean[] = [
+    false,
+    true
+  ];
   
   descricao: WritableSignal<string> = signal('')
   
   //personagem: WritableSignal<string> = signal('')
 
-  numero = computed(() => this.dicas().length)
+  mostrarFormulario = signal(false);
+
+  CriarNovaDica(){
+    this.mostrarFormulario.set(!this.mostrarFormulario());
+  }
+
+  
+  numero_tamanho = computed(() => this.dicas().length)
   CriarDica (){
     this.dicas.update(dicas => [
     ...dicas,
@@ -154,14 +261,80 @@ export class App{
       numero: dicas.length + 1,
       fase: this.fase()?.nome ?? '',
       descricao: this.descricao(),
-      dificuldade: this.dificuldade,
+      dificuldade: this.dificuldade(),
       data: new Date(),
     }
   ]);
   }
   
-  Apagar(){
-    this.dicas.set(this.dicas().slice(0, this.numero()));
-  }
+  numero_apagar = computed(() => this.numero_tamanho())
+  ApagarDica(numero: number) {
+  this.dicas.update(lista =>
+    lista.filter(dica => dica.numero !== numero)
+  );
+}
+
+  dica_atualizar = signal<Dica | null>(null);
+
+  EditarDica(dica: Dica) {
+  this.dica_atualizar.set(dica);
+
+  this.fase.set(
+    this.fases.find(f => f.nome === dica.fase) ?? null
+  );
+
+  this.descricao.set(dica.descricao);
+  this.dificuldade.set(dica.dificuldade);
+
+  this.mostrarFormulario.set(true);
+}
+
   
+  
+  AtualizarDica(dicaAtualizada: Dica) {
+    this.dicas.update(lista =>
+      lista.map(dica =>
+        dica.numero === dicaAtualizada.numero
+          ? dicaAtualizada
+          : dica
+      )
+    );
+  }
+  SalvarAtualizacao() {
+
+    const dica = this.dica_atualizar();
+
+    if (dica === null) {
+      return;
+    }
+
+    const dicaAtualizada: Dica = {
+      numero: dica.numero,
+      fase: this.fase()?.nome ?? '',
+      descricao: this.descricao(),
+      dificuldade: this.dificuldade(),
+      data: dica.data
+    };
+
+    this.AtualizarDica(dicaAtualizada);
+
+    // Sai do modo de edição
+    this.dica_atualizar.set(null);
+
+    // Limpa os campos
+    this.fase.set(null);
+    this.descricao.set('');
+    this.dificuldade.set(false);
+
+    // Fecha o formulário
+    this.mostrarFormulario.set(false);
+  }
+
+  detalhe_dica = signal<Dica | null>(null);
+
+  DetalharDica(dica: Dica) {
+    this.detalhe_dica.set(dica);
+  }
+
+
 }
